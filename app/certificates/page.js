@@ -32,6 +32,7 @@ export default async function CertificatesPage() {
         <table>
           <thead>
             <tr>
+              <th>Скан</th>
               <th>Номер</th>
               <th>Продукт</th>
               <th>Виробник</th>
@@ -44,6 +45,15 @@ export default async function CertificatesPage() {
               const expired = isExpired(c.valid_to);
               return (
                 <tr key={c.image_url}>
+                  <td>
+                    <a href={c.image_url} target="_blank" rel="noreferrer">
+                      <img
+                        src={c.image_url}
+                        alt={c.registration}
+                        style={{ width: 64, height: 88, objectFit: "cover", borderRadius: 4, border: "1px solid var(--border)" }}
+                      />
+                    </a>
+                  </td>
                   <td>{c.registration}</td>
                   <td>{c.product}</td>
                   <td>{c.manufacturer}</td>
