@@ -14,7 +14,8 @@ async function getCompany() {
 async function getProducts() {
   const { data } = await supabase
     .from("vikna_royal_products")
-    .select("id, name, url, data")
+    .select("id, name, url, data, image_url")
+    .order("image_url", { ascending: true, nullsFirst: false })
     .order("name");
   return data || [];
 }
@@ -37,6 +38,13 @@ export default async function HomePage() {
           <div className="grid">
             {products.slice(0, 6).map((p) => (
               <div className="card" key={p.id}>
+                {p.image_url && (
+                  <img
+                    src={p.image_url}
+                    alt={p.name}
+                    style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: 8, marginBottom: 12 }}
+                  />
+                )}
                 <h3>{p.name}</h3>
                 <ul>
                   {(p.data?.features || p.data?.types || p.data?.common_features || []).slice(0, 3).map((f, i) => (
