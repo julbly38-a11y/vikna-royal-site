@@ -1,4 +1,5 @@
 import { supabase } from "../../lib/supabaseClient";
+import { productIdsForCert, productHref } from "../../lib/crossLinks";
 
 export const revalidate = 3600;
 
@@ -10,6 +11,11 @@ async function getCertificates() {
   return data || [];
 }
 
+async function getProductNames() {
+  const { data } = await supabase.from("vikna_royal_products").select("id, name");
+  return Object.fromEntries((data || []).map((p) => [p.id, p.name]));
+}
+
 function isExpired(validTo) {
   if (!validTo) return null;
   return new Date(validTo) < new Date();
@@ -17,6 +23,7 @@ function isExpired(validTo) {
 
 export default async function CertificatesPage() {
   const certs = await getCertificates();
+  const productNames = await getProductNames();
   const expiredCount = certs.filter((c) => isExpired(c.valid_to)).length;
 
   return (
@@ -44,7 +51,7 @@ export default async function CertificatesPage() {
             {certs.map((c) => {
               const expired = isExpired(c.valid_to);
               return (
-                <tr key={c.image_url}>
+                <tr key={c.image_url} id={`cert-${c.registration}`}>
                   <td>
                     <a href={c.image_url} target="_blank" rel="noreferrer">
                       <img
@@ -55,7 +62,21 @@ export default async function CertificatesPage() {
                     </a>
                   </td>
                   <td>{c.registration}</td>
-                  <td>{c.product}</td>
+                  <td>
+                    {c.product}
+                    {productIdsForCert(c).filter((id) => productNames[id]).length > 0 && (
+                      <p className="xlinks">
+                        Продукція:{" "}
+                        {productIdsForCert(c)
+                          .filter((id) => productNames[id])
+                          .map((id) => (
+                            <a key={id} href={productHref(id)}>
+                              {productNames[id]}
+                            </a>
+                          ))}
+                      </p>
+                    )}
+                  </td>
                   <td>{c.manufacturer}</td>
                   <td>
                     {c.valid_from} — {c.valid_to}

@@ -75,6 +75,11 @@ main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
 .card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
 .card a.more { display: inline-block; margin-top: 12px; font-size: 14px; color: var(--red); font-weight: 600; text-decoration: none; }
 
+.xlinks { margin: 12px 0 0; font-size: 12px; color: var(--muted); line-height: 1.9; }
+.xlinks a { display: inline-block; margin: 0 6px 0 0; padding: 0 8px; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: var(--red); text-decoration: none; }
+.xlinks a:hover { border-color: var(--red); }
+.card:target, tr:target { outline: 2px solid var(--red); outline-offset: 2px; }
+
 .badge {
   display: inline-block;
   font-size: 12px;

@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabaseClient";
+import { productHref } from "../lib/crossLinks";
 
 export const revalidate = 3600;
 
@@ -51,7 +52,7 @@ export default async function HomePage() {
                     <li key={i}>{f}</li>
                   ))}
                 </ul>
-                <a className="more" href="/products">Детальніше →</a>
+                <a className="more" href={productHref(p.id)}>Детальніше →</a>
               </div>
             ))}
           </div>

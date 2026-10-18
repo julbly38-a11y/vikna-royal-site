@@ -1,4 +1,5 @@
 import { supabase } from "../../lib/supabaseClient";
+import { certsForProduct, certHref } from "../../lib/crossLinks";
 
 export const revalidate = 3600;
 
@@ -8,6 +9,14 @@ async function getProducts() {
     .select("id, name, url, data, image_url")
     .order("image_url", { ascending: true, nullsFirst: false })
     .order("name");
+  return data || [];
+}
+
+async function getCertificates() {
+  const { data } = await supabase
+    .from("vikna_royal_certificates")
+    .select("registration, product, valid_to")
+    .order("valid_to", { ascending: false });
   return data || [];
 }
 
@@ -21,6 +30,7 @@ function listFields(d) {
 
 export default async function ProductsPage() {
   const products = await getProducts();
+  const certs = await getCertificates();
 
   return (
     <main>
@@ -28,8 +38,10 @@ export default async function ProductsPage() {
         <h2>Вся продукція</h2>
         <p className="lead">{products.length} категорій. Ціни на сайті не публікуються — лише за запитом.</p>
         <div className="grid">
-          {products.map((p) => (
-            <div className="card" key={p.id}>
+          {products.map((p) => {
+            const productCerts = certsForProduct(p.id, certs);
+            return (
+            <div className="card" key={p.id} id={p.id}>
               {p.image_url && (
                 <img
                   src={p.image_url}
@@ -46,13 +58,24 @@ export default async function ProductsPage() {
                   <li key={i}>{f}</li>
                 ))}
               </ul>
+              {productCerts.length > 0 && (
+                <p className="xlinks">
+                  Сертифікати:{" "}
+                  {productCerts.map((c) => (
+                    <a key={c.registration} href={certHref(c)}>
+                      {c.registration}
+                    </a>
+                  ))}
+                </p>
+              )}
               {p.url && (
                 <a className="more" href={p.url} target="_blank" rel="noreferrer">
                   Оригінал на сайті →
                 </a>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </main>
